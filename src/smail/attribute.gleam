@@ -335,176 +335,6 @@ pub fn role(name: String) -> Attribute {
   attribute("role", name)
 }
 
-/// The aria-activedescendant attribute identifies the currently active element
-/// when focus is on a composite widget, combobox, textbox, group, or application.
-///
-pub fn aria_activedescendant(id: String) -> Attribute {
-  aria("activedescendant", id)
-}
-
-/// In ARIA live regions, the global aria-atomic attribute indicates whether
-/// assistive technologies such as a screen reader will present all, or only parts
-/// of, the changed region based on the change notifications defined by the
-/// aria-relevant attribute.
-///
-pub fn aria_atomic(value: Bool) -> Attribute {
-  aria("atomic", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// The aria-autocomplete attribute indicates whether inputting text could trigger
-/// display of one or more predictions of the user's intended value for a combobox,
-/// searchbox, or textbox and specifies how predictions will be presented if they
-/// are made.
-///
-pub fn aria_autocomplete(value: String) -> Attribute {
-  aria("autocomplete", value)
-}
-
-/// The global aria-braillelabel property defines a string value that labels the
-/// current element, which is intended to be converted into Braille.
-///
-pub fn aria_braillelabel(value: String) -> Attribute {
-  aria("braillelabel", value)
-}
-
-/// The global aria-brailleroledescription attribute defines a human-readable,
-/// author-localized abbreviated description for the role of an element intended
-/// to be converted into Braille.
-///
-pub fn aria_brailleroledescription(value: String) -> Attribute {
-  aria("brailleroledescription", value)
-}
-
-/// Used in ARIA live regions, the global aria-busy state indicates an element is
-/// being modified and that assistive technologies may want to wait until the
-/// changes are complete before informing the user about the update.
-///
-pub fn aria_busy(value: Bool) -> Attribute {
-  aria("busy", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// The aria-checked attribute indicates the current "checked" state of checkboxes,
-/// radio buttons, and other widgets.
-///
-pub fn aria_checked(value: String) -> Attribute {
-  aria("checked", value)
-}
-
-/// The aria-colcount attribute defines the total number of columns in a table,
-/// grid, or treegrid when not all columns are present in the DOM.
-///
-pub fn aria_colcount(value: Int) -> Attribute {
-  aria("colcount", int.to_string(value))
-}
-
-/// The aria-colindex attribute defines an element's column index or position with
-/// respect to the total number of columns within a table, grid, or treegrid.
-///
-pub fn aria_colindex(value: Int) -> Attribute {
-  aria("colindex", int.to_string(value))
-}
-
-/// The aria-colindextext attribute defines a human-readable text alternative of
-/// the numeric aria-colindex.
-///
-pub fn aria_colindextext(value: String) -> Attribute {
-  aria("colindextext", value)
-}
-
-/// The aria-colspan attribute defines the number of columns spanned by a cell
-/// or gridcell within a table, grid, or treegrid.
-///
-pub fn aria_colspan(value: Int) -> Attribute {
-  aria("colspan", int.to_string(value))
-}
-
-/// The global aria-controls property identifies the element (or elements) whose
-/// contents or presence are controlled by the element on which this attribute is
-/// set.
-///
-pub fn aria_controls(value: String) -> Attribute {
-  aria("controls", value)
-}
-
-/// A non-null aria-current state on an element indicates that this element represents
-/// the current item within a container or set of related elements.
-///
-pub fn aria_current(value: String) -> Attribute {
-  aria("current", value)
-}
-
-/// The global aria-describedby attribute identifies the element (or elements)
-/// that describes the element on which the attribute is set.
-///
-pub fn aria_describedby(value: String) -> Attribute {
-  aria("describedby", value)
-}
-
-/// The global aria-description attribute defines a string value that describes
-/// or annotates the current element.
-///
-pub fn aria_description(value: String) -> Attribute {
-  aria("description", value)
-}
-
-/// The global aria-details attribute identifies the element (or elements) that
-/// provide additional information related to the object.
-///
-pub fn aria_details(value: String) -> Attribute {
-  aria("details", value)
-}
-
-/// The aria-disabled state indicates that the element is perceivable but disabled,
-/// so it is not editable or otherwise operable.
-///
-pub fn aria_disabled(value: Bool) -> Attribute {
-  aria("disabled", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// The aria-errormessage attribute on an object identifies the element that
-/// provides an error message for that object.
-///
-pub fn aria_errormessage(value: String) -> Attribute {
-  aria("errormessage", value)
-}
-
-/// The aria-expanded attribute is set on an element to indicate if a control is
-/// expanded or collapsed, and whether or not the controlled elements are displayed
-/// or hidden.
-///
-pub fn aria_expanded(value: Bool) -> Attribute {
-  aria("expanded", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// The global aria-flowto attribute identifies the next element (or elements) in
-/// an alternate reading order of content. This allows assistive technology to
-/// override the general default of reading in document source order at the user's
-/// discretion.
-///
-pub fn aria_flowto(value: String) -> Attribute {
-  aria("flowto", value)
-}
-
-/// The aria-haspopup attribute indicates the availability and type of interactive
-/// popup element that can be triggered by the element on which the attribute is
-/// set.
-///
-pub fn aria_haspopup(value: String) -> Attribute {
-  aria("haspopup", value)
-}
-
 /// The aria-hidden state indicates whether the element is exposed to an accessibility
 /// API.
 ///
@@ -513,20 +343,6 @@ pub fn aria_hidden(value: Bool) -> Attribute {
     True -> "true"
     False -> "false"
   })
-}
-
-/// The aria-invalid state indicates the entered value does not conform to the
-/// format expected by the application.
-///
-pub fn aria_invalid(value: String) -> Attribute {
-  aria("invalid", value)
-}
-
-/// The global aria-keyshortcuts attribute indicates keyboard shortcuts that an
-/// author has implemented to activate or give focus to an element.
-///
-pub fn aria_keyshortcuts(value: String) -> Attribute {
-  aria("keyshortcuts", value)
 }
 
 /// The aria-label attribute defines a string value that can be used to name an
@@ -543,6 +359,20 @@ pub fn aria_labelledby(value: String) -> Attribute {
   aria("labelledby", value)
 }
 
+/// The global aria-describedby attribute identifies the element (or elements)
+/// that describes the element on which the attribute is set.
+///
+pub fn aria_describedby(value: String) -> Attribute {
+  aria("describedby", value)
+}
+
+/// The global aria-description attribute defines a string value that describes
+/// or annotates the current element.
+///
+pub fn aria_description(value: String) -> Attribute {
+  aria("description", value)
+}
+
 /// The aria-level attribute defines the hierarchical level of an element within
 /// a structure.
 ///
@@ -550,191 +380,9 @@ pub fn aria_level(value: Int) -> Attribute {
   aria("level", int.to_string(value))
 }
 
-/// The global aria-live attribute indicates that an element will be updated, and
-/// describes the types of updates the user agents, assistive technologies, and
-/// user can expect from the live region.
-///
-pub fn aria_live(value: String) -> Attribute {
-  aria("live", value)
-}
-
-/// The aria-modal attribute indicates whether an element is modal when displayed.
-///
-pub fn aria_modal(value: Bool) -> Attribute {
-  aria("modal", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// The aria-multiline attribute indicates whether a textbox accepts multiple
-/// lines of input or only a single line.
-///
-pub fn aria_multiline(value: Bool) -> Attribute {
-  aria("multiline", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// The aria-multiselectable attribute indicates that the user may select more
-/// than one item from the current selectable descendants.
-///
-pub fn aria_multiselectable(value: Bool) -> Attribute {
-  aria("multiselectable", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// The aria-orientation attribute indicates whether the element's orientation is
-/// horizontal, vertical, or unknown/ambiguous.
-///
-pub fn aria_orientation(value: String) -> Attribute {
-  aria("orientation", value)
-}
-
-/// The aria-owns attribute identifies an element (or elements) in order to define
-/// a visual, functional, or contextual relationship between a parent and its
-/// child elements when the DOM hierarchy cannot be used to represent the relationship.
-///
-pub fn aria_owns(value: String) -> Attribute {
-  aria("owns", value)
-}
-
-/// The aria-placeholder attribute defines a short hint (a word or short phrase)
-/// intended to help the user with data entry when a form control has no value.
-/// The hint can be a sample value or a brief description of the expected format.
-///
-pub fn aria_placeholder(value: String) -> Attribute {
-  aria("placeholder", value)
-}
-
-/// The aria-posinset attribute defines an element's number or position in the
-/// current set of listitems or treeitems when not all items are present in the
-/// DOM.
-///
-pub fn aria_posinset(value: Int) -> Attribute {
-  aria("posinset", int.to_string(value))
-}
-
-/// The aria-pressed attribute indicates the current "pressed" state of a toggle
-/// button.
-///
-pub fn aria_pressed(value: String) -> Attribute {
-  aria("pressed", value)
-}
-
-/// The aria-readonly attribute indicates that the element is not editable, but is
-/// otherwise operable.
-///
-pub fn aria_readonly(value: Bool) -> Attribute {
-  aria("readonly", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// Used in ARIA live regions, the global aria-relevant attribute indicates what
-/// notifications the user agent will trigger when the accessibility tree within
-/// a live region is modified.
-///
-pub fn aria_relevant(value: String) -> Attribute {
-  aria("relevant", value)
-}
-
-/// The aria-required attribute indicates that user input is required on the element
-/// before a form may be submitted.
-///
-pub fn aria_required(value: Bool) -> Attribute {
-  aria("required", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
 /// The aria-roledescription attribute defines a human-readable, author-localised
 /// description for the role of an element.
 ///
 pub fn aria_roledescription(value: String) -> Attribute {
   aria("roledescription", value)
-}
-
-/// The aria-rowcount attribute defines the total number of rows in a table,
-/// grid, or treegrid.
-///
-pub fn aria_rowcount(value: Int) -> Attribute {
-  aria("rowcount", int.to_string(value))
-}
-
-/// The aria-rowindex attribute defines an element's position with respect to the
-/// total number of rows within a table, grid, or treegrid.
-///
-pub fn aria_rowindex(value: Int) -> Attribute {
-  aria("rowindex", int.to_string(value))
-}
-
-/// The aria-rowindextext attribute defines a human-readable text alternative of
-/// aria-rowindex.
-///
-pub fn aria_rowindextext(value: String) -> Attribute {
-  aria("rowindextext", value)
-}
-
-/// The aria-rowspan attribute defines the number of rows spanned by a cell or
-/// gridcell within a table, grid, or treegrid.
-///
-pub fn aria_rowspan(value: Int) -> Attribute {
-  aria("rowspan", int.to_string(value))
-}
-
-/// The aria-selected attribute indicates the current "selected" state of various
-/// widgets.
-///
-pub fn aria_selected(value: Bool) -> Attribute {
-  aria("selected", case value {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// The aria-setsize attribute defines the number of items in the current set of
-/// listitems or treeitems when not all items in the set are present in the DOM.
-///
-pub fn aria_setsize(value: Int) -> Attribute {
-  aria("setsize", int.to_string(value))
-}
-
-/// The aria-sort attribute indicates if items in a table or grid are sorted in
-/// ascending or descending order.
-///
-pub fn aria_sort(value: String) -> Attribute {
-  aria("sort", value)
-}
-
-/// The aria-valuemax attribute defines the maximum allowed value for a range
-/// widget.
-///
-pub fn aria_valuemax(value: String) -> Attribute {
-  aria("valuemax", value)
-}
-
-/// The aria-valuemin attribute defines the minimum allowed value for a range
-/// widget.
-///
-pub fn aria_valuemin(value: String) -> Attribute {
-  aria("valuemin", value)
-}
-
-/// The aria-valuenow attribute defines the current value for a range widget.
-///
-pub fn aria_valuenow(value: String) -> Attribute {
-  aria("valuenow", value)
-}
-
-/// The aria-valuetext attribute defines the human-readable text alternative of
-/// aria-valuenow for a range widget.
-///
-pub fn aria_valuetext(value: String) -> Attribute {
-  aria("valuetext", value)
 }
