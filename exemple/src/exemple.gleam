@@ -187,12 +187,12 @@ fn email(name: String) {
           email.center([], [
             email.button(
               [
-                #("border-radius", "100px"),
-                #("background-color", "#ffaff3"),
-                #("color", "#1e1e1e"),
-                #("padding", "12px 32px 11px"),
+                attribute.style("border-radius", "100px"),
+                attribute.style("background-color", "#ffaff3"),
+                attribute.style("color", "#1e1e1e"),
+                attribute.style("padding", "12px 32px 11px"),
+                attribute.href("https://tour.gleam.run"),
               ],
-              [attribute.href("https://tour.gleam.run")],
               [html.text("Try Gleam")],
             ),
           ]),
@@ -270,9 +270,8 @@ fn layout(preview: Element, children: List(Element)) {
       ]),
       email.body(
         [
-          #("background-color", "#fffbe8"),
+          attribute.style("background-color", "#fffbe8"),
         ],
-        [],
         [
           preview,
           email.container(

@@ -17,6 +17,8 @@ import gleam/string
 import lustremail/attribute.{type Attribute}
 import lustremail/element.{type Element}
 import lustremail/element/html
+import lustremail/vdom/vattr
+import lustremail/vdom/vnode
 
 /// Converts an element to a string with XHTML 1.0 doctype.
 ///
@@ -35,11 +37,8 @@ import lustremail/element/html
 /// ```
 ///
 pub fn to_html(el: Element) -> String {
-  element.to_document_string(el)
-  |> string.replace(
-    "<!doctype html>",
-    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
-  )
+  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
+  <> vnode.to_string(wrap_document(el))
 }
 
 /// Render the root `<html>` element.
@@ -284,6 +283,38 @@ pub fn font(
   )
 }
 
+fn extract_styles(
+  attrs: List(Attribute),
+) -> #(List(Attribute), List(#(String, String))) {
+  extract_styles_loop(
+    list.sort(attrs, by: fn(a, b) { vattr.compare(b, a) }),
+    #([], []),
+  )
+}
+
+fn extract_styles_loop(
+  attrs: List(Attribute),
+  acc: #(List(Attribute), List(#(String, String))),
+) -> #(List(Attribute), List(#(String, String))) {
+  case attrs {
+    [] -> acc
+    [attr, ..rest] -> {
+      case attr.name == "style" {
+        True ->
+          extract_styles_loop(rest, #(
+            acc.0,
+            list.append(
+              acc.1,
+              string.split(attr.value, ";")
+                |> list.filter_map(string.split_once(_, ":")),
+            ),
+          ))
+        False -> extract_styles_loop(rest, #([attr, ..acc.0], acc.1))
+      }
+    }
+  }
+}
+
 /// Render the email `<body>` element with cross-client compatibility fixes.
 ///
 /// ## Example
@@ -299,11 +330,9 @@ pub fn font(
 /// )
 /// ```
 ///
-pub fn body(
-  styles: List(#(String, String)),
-  attrs: List(Attribute),
-  children: List(Element),
-) -> Element {
+pub fn body(attrs: List(Attribute), children: List(Element)) -> Element {
+  let #(attrs, styles) = extract_styles(attrs)
+
   html.body(
     [
       attribute.styles(
@@ -668,11 +697,9 @@ fn parse_padding(styles: List(#(String, String))) -> #(Int, Int, Int, Int) {
 /// )
 /// ```
 ///
-pub fn button(
-  styles: List(#(String, String)),
-  attrs: List(Attribute),
-  children: List(Element),
-) -> Element {
+pub fn button(attrs: List(Attribute), children: List(Element)) -> Element {
+  let #(attrs, styles) = extract_styles(attrs)
+
   let #(pt, pr, pb, pl) = parse_padding(styles)
   let y = pt + pb
   let text_raise = px_to_pt(y)
@@ -859,4 +886,38 @@ pub fn center(attrs: List(Attribute), children: List(Element)) -> Element {
     ],
     [html.tbody([], [html.tr([], [html.td([], children)])])],
   )
+}
+
+type DocumentType {
+  Html
+  HeadOnly
+  BodyOnly
+  HeadAndBody
+  Other
+}
+
+fn get_document_type(el: Element) -> DocumentType {
+  case el {
+    vnode.Element(tag: "html", ..) | vnode.UnsafeInnerHtml(tag: "html", ..) ->
+      Html
+    vnode.Element(tag: "head", ..) | vnode.UnsafeInnerHtml(tag: "head", ..) ->
+      HeadOnly
+    vnode.Element(tag: "body", ..) | vnode.UnsafeInnerHtml(tag: "body", ..) ->
+      BodyOnly
+    vnode.Fragment(children: [child]) -> get_document_type(child)
+    vnode.Fragment(children: [head, body]) ->
+      case get_document_type(head), get_document_type(body) {
+        HeadOnly, BodyOnly -> HeadAndBody
+        _, _ -> Other
+      }
+    _ -> Other
+  }
+}
+
+fn wrap_document(el: Element) -> Element {
+  case get_document_type(el) {
+    Html -> el
+    HeadOnly | BodyOnly | HeadAndBody -> element.element("html", [], [el])
+    Other -> element.element("html", [], [element.element("body", [], [el])])
+  }
 }
