@@ -26,76 +26,6 @@ pub fn none() -> Attribute {
 
 // GLOBAL ATTRIBUTES -----------------------------------------------------------
 
-/// Defines a shortcut key to activate or focus the element. Multiple options
-/// may be provided as a set of space-separated characters that are exactly one
-/// code point each.
-///
-/// The way to activate the access key depends on the browser and its platform:
-///
-/// |         | Windows           | Linux               | Mac OS              |
-/// |---------|-------------------|---------------------|---------------------|
-/// | Firefox | Alt + Shift + key | Alt + Shift + key   | Ctrl + Option + key |
-/// | Chrome  | Alt + key         | Ctrl + Option + key | Ctrl + Option + key |
-/// | Safari  |                   |                     | Ctrl + Option + key |
-///
-pub fn accesskey(key: String) -> Attribute {
-  attribute("accesskey", key)
-}
-
-/// Controls whether text input is automatically capitalised. The following values
-/// are accepted:
-///
-/// | Value        | Mode       |
-/// |--------------|------------|
-/// | ""           | default    |
-/// | "none"       | none       |
-/// | "off"        |            |
-/// | "sentences"  | sentences  |
-/// | "on"         |            |
-/// | "words"      | words      |
-/// | "characters" | characters |
-///
-/// The autocapitalisation processing model is based on the following five modes:
-///
-/// - **default**: The user agent and input method should make their own determination
-///   of whether or not to enable autocapitalization.
-///
-/// - **none**: No autocapitalisation should be applied (all letters should default
-///   to lowercase).
-///
-/// - **sentences**: The first letter of each sentence should default to a capital
-///   letter; all other letters should default to lowercase.
-///
-/// - **words**: The first letter of each word should default to a capital letter;
-///   all other letters should default to lowercase.
-///
-/// - **characters**: All letters should default to uppercase.
-///
-pub fn autocapitalize(value: String) -> Attribute {
-  attribute("autocapitalize", value)
-}
-
-/// Controls whether the user agent may automatically correct mispelled words
-/// while typing. Whether or not spelling is corrected is left up to the user
-/// agent and may also depend on the user's settings.
-///
-/// When disabled the user agent is **never** allowed to correct spelling.
-///
-pub fn autocorrect(enabled: Bool) -> Attribute {
-  boolean_attribute("autocorrect", enabled)
-}
-
-/// For server-rendered HTML, this attribute controls whether an element should
-/// be focused when the page first loads.
-///
-/// > **Note**: Lustremail's runtime augments that native behaviour of this attribute.
-/// > Whenever it is toggled true, the element will be automatically focused even
-/// > if it already exists in the DOM.
-///
-pub fn autofocus(should_autofocus: Bool) -> Attribute {
-  boolean_attribute("autofocus", should_autofocus)
-}
-
 /// A class is a non-unique identifier for an element primarily used for styling
 /// purposes. You can provide multiple classes as a space-separated list and any
 /// style rules that apply to any of the classes will be applied to the element.
@@ -132,32 +62,6 @@ fn do_classes(names: List(#(String, Bool)), class: String) -> String {
   }
 }
 
-/// Indicates whether the element's content is editable by the user, allowing them
-/// to modify the HTML content directly. The following values are accepted:
-///
-/// | Value            | Description                                           |
-/// |------------------|-------------------------------------------------------|
-/// | "true"           | The element is editable.                              |
-/// | ""               |                                                       |
-/// | "false"          | The element is not editable.                          |
-/// | "plaintext-only" | The element is editable without rich text formatting. |
-///
-/// > **Note**: setting the value to an empty string does *not* disable this
-/// > attribute, and is instead equivalent to setting it to `"true"`!
-///
-pub fn contenteditable(is_editable: String) -> Attribute {
-  attribute("contenteditable", is_editable)
-}
-
-/// Add a `data-*` attribute to an HTML element. The key will be prefixed by
-/// `"data-"`, and accessible from JavaScript or in Gleam decoders under the
-/// path `element.dataset.key` where `key` is the key you provide to this
-/// function.
-///
-pub fn data(key: String, value: String) -> Attribute {
-  attribute("data-" <> key, value)
-}
-
 /// Specifies the text direction of the element's content. The following values
 /// are accepted:
 ///
@@ -176,48 +80,6 @@ pub fn dir(direction: String) -> Attribute {
   attribute("dir", direction)
 }
 
-/// Indicates whether the element can be dragged as part of the HTML drag-and-drop
-/// API.
-///
-pub fn draggable(is_draggable: Bool) -> Attribute {
-  attribute("draggable", case is_draggable {
-    True -> "true"
-    False -> "false"
-  })
-}
-
-/// Specifies what action label (or potentially icon) to present for the "enter"
-/// key on virtual keyboards such as mobile devices. The following values are
-/// accepted:
-///
-/// | Value      | Example        |
-/// |------------|----------------|
-/// | "enter"    | "return", "↵"  |
-/// | "done"     | "done", "✅"   |
-/// | "go"       | "go"           |
-/// | "next"     | "next"         |
-/// | "previous" | "return"       |
-/// | "search"   | "search", "🔍" |
-/// | "send"     | "send"         |
-///
-/// The examples listed are demonstrative and may not be the actual labels used
-/// by user agents. When unspecified or invalid, the user agent may use contextual
-/// information such as the type of an input to determine the label.
-///
-pub fn enterkeyhint(value: String) -> Attribute {
-  attribute("enterkeyhint", value)
-}
-
-/// Indicates whether the element is relevant to the page's current state. A
-/// hidden element is not visible to the user and is inaccessible to assistive
-/// technologies such as screen readers. This makes it unsuitable for simple
-/// presentation purposes, but it can be useful for example to render something
-/// that may be made visible later.
-///
-pub fn hidden(is_hidden: Bool) -> Attribute {
-  boolean_attribute("hidden", is_hidden)
-}
-
 /// The `"id"` attribute is used to uniquely identify a single element within a
 /// document. It can be used to reference the element in CSS with the selector
 /// `#id`, in JavaScript with `document.getElementById("id")`, or by anchors on
@@ -225,77 +87,6 @@ pub fn hidden(is_hidden: Bool) -> Attribute {
 ///
 pub fn id(value: String) -> Attribute {
   attribute("id", value)
-}
-
-/// Marks the element as inert, meaning it is not currently interactive and does
-/// not receive user input. For sighted users, it's common to style inert elements
-/// in a way that makes them visually distinct from active elements, such as by
-/// greying them out: this can help avoid confusion for users who may not otherwise
-/// know the content they are looking at is inactive.
-///
-pub fn inert(is_inert: Bool) -> Attribute {
-  boolean_attribute("inert", is_inert)
-}
-
-/// Hints to the user agent about what type of virtual keyboard to display when
-/// the user interacts with the element. The following values are accepted:
-///
-/// | Value        | Description                                                   |
-/// |--------------|---------------------------------------------------------------|
-/// | "none"       | No virtual keyboard should be displayed.                      |
-/// | "text"       | A standard text input keyboard.                               |
-/// | "decimal"    | A numeric keyboard with locale-appropriate separator.         |
-/// | "numeric"    | A numeric keyboard.                                           |
-/// | "tel"        | A telephone keypad including "#" and "*".                     |
-/// | "email"      | A keyboard for entering email addresses including "@" and "." |
-/// | "url"        | A keyboard for entering URLs including "/" and ".".           |
-/// | "search"     | A keyboard for entering search queries should be shown.       |
-///
-/// The `"none"` value should only be used in cases where you are rendering a
-/// custom input method, otherwise the user will not be able to enter any text!
-///
-pub fn inputmode(value: String) -> Attribute {
-  attribute("inputmode", value)
-}
-
-/// Specifies the [customised built-in element](https://html.spec.whatwg.org/#customized-built-in-element)
-/// to be used in place of the native element this attribute is applied to.
-///
-pub fn is(value: String) -> Attribute {
-  attribute("is", value)
-}
-
-/// Used as part of the [Microdata](https://schema.org/docs/gs.html) format to
-/// specify the global unique identifier of an item, for example books that are
-/// identifiable by their ISBN.
-///
-pub fn itemid(id: String) -> Attribute {
-  attribute("itemid", id)
-}
-
-/// Used as part of the [Microdata](https://schema.org/docs/gs.html) format to
-/// specify that the content of the element is to be treated as a value of the
-/// given property name.
-///
-pub fn itemprop(name: String) -> Attribute {
-  attribute("itemprop", name)
-}
-
-/// Used as part of the [Microdata](https://schema.org/docs/gs.html) format to
-/// indicate that the element and its descendants form a single item of key-value
-/// data.
-///
-pub fn itemscope(has_scope: Bool) -> Attribute {
-  boolean_attribute("itemscope", has_scope)
-}
-
-/// Used as part of the [Microdata](https://schema.org/docs/gs.html) format to
-/// specify the type of item being described. This is a URL that points to
-/// a schema containing the vocabulary used for an item's key-value pairs, such
-/// as a schema.org type.
-///
-pub fn itemtype(url: String) -> Attribute {
-  attribute("itemtype", url)
 }
 
 /// Specifies the language of the element's content and the language of any of
@@ -307,24 +98,6 @@ pub fn itemtype(url: String) -> Attribute {
 ///
 pub fn lang(language: String) -> Attribute {
   attribute("lang", language)
-}
-
-/// A cryptographic nonce used by CSP (Content Security Policy) to allow or
-/// deny the fetch of a given resource.
-///
-pub fn nonce(value: String) -> Attribute {
-  attribute("nonce", value)
-}
-
-/// Indicates whether the element's content should be checked for spelling errors.
-/// This typically only applies to inputs and textareas, or elements that are
-/// [`contenteditable`](#contenteditable).
-///
-pub fn spellcheck(should_check: Bool) -> Attribute {
-  attribute("spellcheck", case should_check {
-    True -> "true"
-    False -> "false"
-  })
 }
 
 /// Provide a single property name and value to be used as inline styles for the
@@ -362,29 +135,6 @@ fn do_styles(properties: List(#(String, String)), styles: String) -> String {
   }
 }
 
-/// Specifies the tabbing order of the element. If an element is not typically
-/// focusable, such as a `<div>`, it will be made focusable when this attribute
-/// is set.
-///
-/// Any integer value is accepted, but the following values are recommended:
-///
-/// - `-1`: indicates the element may receive focus, but should not be sequentially
-///   focusable. The user agent may choose to ignore this preference if, for
-///   example, the user agent is a screen reader.
-///
-/// - `0`: indicates the element may receive focus and should be placed in the
-///   sequential focus order in the order it appears in the DOM.
-///
-/// - any positive integer: indicates the element should be placed in the sequential
-///   focus order relative to other elements with a positive tabindex.
-///
-/// Values other than `0` and `-1` are generally not recommended as managing
-/// the relative order of focusable elements can be difficult and error-prone.
-///
-pub fn tabindex(index: Int) -> Attribute {
-  attribute("tabindex", int.to_string(index))
-}
-
 /// Annotate an element with additional information that may be suitable as a
 /// tooltip, such as a description of a link or image.
 ///
@@ -395,40 +145,6 @@ pub fn tabindex(index: Int) -> Attribute {
 ///
 pub fn title(text: String) -> Attribute {
   attribute("title", text)
-}
-
-/// Controls whether an element's content may be translated by the user agent
-/// when the page is localised. This includes both the element's text content
-/// and some of its attributes:
-///
-/// | Attribute   | Element(s)                                 |
-/// |-------------|--------------------------------------------|
-/// | abbr        | th                                         |
-/// | alt         | area, img, input                           |
-/// | content     | meta                                       |
-/// | download    | a, area                                    |
-/// | label       | optgroup, option, track                    |
-/// | lang        | *                                          |
-/// | placeholder | input, textarea                            |
-/// | srcdoc      | iframe                                     |
-/// | title       | *                                          |
-/// | style       | *                                          |
-/// | value       | input (with type="button" or type="reset") |
-///
-pub fn translate(should_translate: Bool) -> Attribute {
-  attribute("translate", case should_translate {
-    True -> "yes"
-    False -> "no"
-  })
-}
-
-/// Indicates if writing suggestions should be enabled for this element.
-///
-pub fn writingsuggestions(enabled: Bool) -> Attribute {
-  attribute("writingsuggestions", case enabled {
-    True -> "true"
-    False -> "false"
-  })
 }
 
 // ANCHOR AND LINK ATTRIBUTES --------------------------------------------------
@@ -458,105 +174,6 @@ pub fn target(value: String) -> Attribute {
   attribute("target", value)
 }
 
-/// Indicates that the linked resource should be downloaded rather than displayed.
-/// When provided with a value, it suggests a filename for the downloaded file.
-///
-pub fn download(filename: String) -> Attribute {
-  attribute("download", filename)
-}
-
-/// Provides a space-separated list of URLs that will be notified if the user
-/// follows the hyperlink. These URLs will receive POST requests with bodies
-/// of type `ping/1.0`.
-///
-pub fn ping(urls: List(String)) -> Attribute {
-  attribute("ping", string.join(urls, " "))
-}
-
-/// Specifies the relationship between the current document and the linked resource.
-/// Multiple relationship values can be provided as a space-separated list.
-///
-pub fn rel(value: String) -> Attribute {
-  attribute("rel", value)
-}
-
-/// Specifies the language of the linked resource. The value must be a valid
-/// [BCP 47 language tag](https://tools.ietf.org/html/bcp47).
-///
-pub fn hreflang(language: String) -> Attribute {
-  attribute("hreflang", language)
-}
-
-/// Specifies the referrer policy for fetches initiated by the element. The
-/// following values are accepted:
-///
-/// | Value                              | Description                                           |
-/// |-----------------------------------|--------------------------------------------------------|
-/// | "no-referrer"                     | No Referer header is sent                              |
-/// | "no-referrer-when-downgrade"      | Only send Referer for same-origin or more secure       |
-/// | "origin"                          | Send only the origin part of the URL                   |
-/// | "origin-when-cross-origin"        | Full URL for same-origin, origin only for cross-origin |
-/// | "same-origin"                     | Only send Referer for same-origin requests             |
-/// | "strict-origin"                   | Like origin, but only to equally secure destinations   |
-/// | "strict-origin-when-cross-origin" | Default policy with varying levels of restriction      |
-/// | "unsafe-url"                      | Always send the full URL                               |
-///
-pub fn referrerpolicy(value: String) -> Attribute {
-  attribute("referrerpolicy", value)
-}
-
-/// Specifies the type of the resource being linked to, which is necessary for
-/// request matching, application of correct content security policy, and setting
-/// of correct Accept request header.
-///
-/// > **Note**: this attribute is required when rel="preload" has been set on the
-/// > `<link>` element, optional when `rel="modulepreload"` has been set, and
-/// > otherwise should not be used.
-///
-/// | Value      | Applies to                       |
-/// |------------|----------------------------------|
-/// | "audio"    | `<audio>`                        |
-/// | "document" | `<iframe>`, `<frame>`            |
-/// | "embed"    | `<embed>`                        |
-/// | "fetch"    | fetch, XHR                       |
-/// | "font"     | CSS @font-face                   |
-/// | "image"    | `<img>`, `<image>`, `<picture>`  |
-/// | "object"   | `<object>`                       |
-/// | "script"   | `<script>`, Worker importScripts |
-/// | "style"    | `<link rel="stylesheet">`        |
-/// | "video"    | `<video>`                        |
-/// | "worker"   | Worker, SharedWorker             |
-///
-pub fn as_(value: String) -> Attribute {
-  attribute("as", value)
-}
-
-/// This attribute explicitly indicates that certain operations should be blocked
-/// until specific conditions are met. It must only be used when the rel attribute
-/// contains the expect or stylesheet keywords. With `rel="expect"`, it indicates
-/// that operations should be blocked until a specific DOM node has been parsed.
-/// With `rel="stylesheet"`, it indicates that operations should be blocked until
-/// an external stylesheet and its critical subresources have been fetched and
-/// applied to the document.
-///
-pub fn blocking(value: Bool) -> Attribute {
-  attribute("blocking", case value {
-    True -> "render"
-    False -> ""
-  })
-}
-
-/// Provides a base64-encoded hash of the resource being linked to. This is used
-/// by the browser to verify that a fetched resource has not been tampered with.
-///
-/// > **Note**: this attribute is only meaningful on `<link>` elements with either
-/// > `rel="stylesheet"`, `rel="preload"`, or `rel="modulepreload"`. It may also
-/// > be used on `<script>` elements.
-///
-pub fn integrity(hash: String) -> Attribute {
-  attribute("integrity", hash)
-}
-
 // IMAGE ATTRIBUTES ------------------------------------------------------------
 
 /// Specifies text that should be displayed when the image cannot be rendered.
@@ -573,26 +190,6 @@ pub fn src(url: String) -> Attribute {
   attribute("src", url)
 }
 
-/// Configures the CORS (Cross-Origin Resource Sharing) settings for the element.
-/// Valid values are "anonymous" and "use-credentials".
-///
-pub fn crossorigin(value: String) -> Attribute {
-  attribute("crossorigin", value)
-}
-
-/// Specifies the name of an image map to be used with the image.
-///
-pub fn usemap(value: String) -> Attribute {
-  attribute("usemap", value)
-}
-
-/// Indicates that the image is a server-side image map. When a user clicks on the
-/// image, the coordinates of the click are sent to the server.
-///
-pub fn ismap(is_map: Bool) -> Attribute {
-  boolean_attribute("ismap", is_map)
-}
-
 /// Specifies the width of the element in pixels.
 ///
 pub fn width(value: Int) -> Attribute {
@@ -603,27 +200,6 @@ pub fn width(value: Int) -> Attribute {
 ///
 pub fn height(value: Int) -> Attribute {
   attribute("height", int.to_string(value))
-}
-
-/// Provides a hint about how the image should be decoded. Valid values are
-/// "sync", "async", and "auto".
-///
-pub fn decoding(value: String) -> Attribute {
-  attribute("decoding", value)
-}
-
-/// Indicates how the browser should load the image. Valid values are "eager"
-/// (load immediately) and "lazy" (defer loading until needed).
-///
-pub fn loading(value: String) -> Attribute {
-  attribute("loading", value)
-}
-
-/// Sets the priority for fetches initiated by the element. Valid values are
-/// "high", "low", and "auto".
-///
-pub fn fetchpriority(value: String) -> Attribute {
-  attribute("fetchpriority", value)
 }
 
 // ELEMENT ATTRIBUTES ----------------------------------------------------------
@@ -667,13 +243,6 @@ pub fn content(value: String) -> Attribute {
 ///
 pub fn charset(value: String) -> Attribute {
   attribute("charset", value)
-}
-
-/// Specifies the media types the resource applies to. This is commonly used with
-/// link elements for stylesheets to determine when they should be loaded.
-///
-pub fn media(query: String) -> Attribute {
-  attribute("media", query)
 }
 
 // TABLE ATTRIBUTES ------------------------------------------------------------
