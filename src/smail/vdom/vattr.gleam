@@ -87,11 +87,18 @@ pub fn merge(
       Attribute(name: "style", value: style2),
       ..rest
     ] -> {
-      let value = style1 <> ";" <> style2
+      let value = case string.ends_with(style1, ";") {
+        True -> style1 <> style2
+        False -> style1 <> ";" <> style2
+      }
       let attribute = Attribute(name: "style", value: value)
 
       merge([attribute, ..rest], merged)
     }
+
+    [Attribute(name: name1, ..), Attribute(name: name2, ..) as keep, ..rest]
+      if name1 == name2
+    -> merge([keep, ..rest], merged)
 
     [attribute, ..rest] -> merge(rest, [attribute, ..merged])
   }
