@@ -27,11 +27,11 @@ import smail/vdom/vnode
 ///
 /// ```gleam
 /// import smail/email
-/// import lustre/element/html
+/// import smail/element/html
 ///
 /// email.html([], [
 ///   email.head([], []),
-///   email.body([], [], [html.text("Hello!")]),
+///   email.body([], [html.text("Hello!")]),
 /// ])
 /// |> email.to_html
 /// // -> "<!DOCTYPE html PUBLIC ...><html>...</html>"
@@ -44,7 +44,7 @@ pub fn to_html(el: Element) -> String {
 
 /// Render the root `<html>` element.
 ///
-/// Thin wrapper around `lustre/element/html.html`.
+/// Thin wrapper around `smail/element/html.html`.
 ///
 /// ## Example
 ///
@@ -53,7 +53,7 @@ pub fn to_html(el: Element) -> String {
 ///
 /// email.html([], [
 ///   email.head([], []),
-///   email.body([], [], []),
+///   email.body([], []),
 /// ])
 /// ```
 ///
@@ -71,8 +71,9 @@ pub fn html(attrs: List(Attribute), children: List(Element)) {
 /// ## Example
 ///
 /// ```gleam
+/// import smail/attribute
 /// import smail/email
-/// import lustre/element/html
+/// import smail/element/html
 ///
 /// email.head([], [
 ///   html.meta([
@@ -322,11 +323,11 @@ fn extract_styles_loop(
 ///
 /// ```gleam
 /// import smail/email
-/// import lustre/element/html
+/// import smail/element/html
+/// import smail/style
 ///
 /// email.body(
-///   [#("background-color", "#f6f6f6"), #("padding", "20px 0")],
-///   [],
+///   [style.background_color("#f6f6f6"), style.padding("20px 0")],
 ///   [html.text("Email content here")],
 /// )
 /// ```
@@ -382,9 +383,9 @@ pub fn body(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// ```gleam
 /// import smail/email
-/// import lustre/element/html
+/// import smail/element/html
 ///
-/// email.body([], [], [
+/// email.body([], [
 ///   email.container([], [
 ///     html.text("Centered content, max 600px wide"),
 ///   ]),
@@ -419,7 +420,7 @@ pub fn container(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// ```gleam
 /// import smail/email
-/// import lustre/element/html
+/// import smail/element/html
 ///
 /// email.container([], [
 ///   email.section([], [
@@ -457,8 +458,8 @@ pub fn section(attrs: List(Attribute), children: List(Element)) -> Element {
 /// ## Example
 ///
 /// ```gleam
+/// import smail/attribute
 /// import smail/email
-/// import lustre/attribute
 ///
 /// email.img([
 ///   attribute.src("https://example.com/logo.png"),
@@ -483,7 +484,7 @@ pub fn img(attrs: List(Attribute)) {
 ///
 /// ```gleam
 /// import smail/email
-/// import lustre/element/html
+/// import smail/element/html
 ///
 /// email.text([], [
 ///   html.text("Your order has been confirmed."),
@@ -509,7 +510,7 @@ pub fn text(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// ```gleam
 /// import smail/email
-/// import lustre/element/html
+/// import smail/element/html
 ///
 /// email.section([], [
 ///   email.text([], [html.text("Above the line")]),
@@ -532,9 +533,9 @@ pub fn hr(attrs: List(Attribute)) -> Element {
 /// ## Example
 ///
 /// ```gleam
+/// import smail/attribute
 /// import smail/email
-/// import lustre/attribute
-/// import lustre/element/html
+/// import smail/element/html
 ///
 /// email.link(
 ///   [attribute.href("https://example.com")],
@@ -567,7 +568,7 @@ const whitespace_codes = "\u{00A0}\u{200C}\u{200B}\u{200D}\u{200E}\u{200F}\u{FEF
 ///
 /// email.html([], [
 ///   email.head([], []),
-///   email.body([], [], [
+///   email.body([], [
 ///     email.preview("Your order #1234 has been shipped!"),
 ///     email.container([], []),
 ///   ]),
@@ -683,18 +684,19 @@ fn parse_padding(styles: List(#(String, String))) -> #(Int, Int, Int, Int) {
 /// ## Example
 ///
 /// ```gleam
+/// import smail/attribute
 /// import smail/email
-/// import lustre/attribute
-/// import lustre/element/html
+/// import smail/element/html
+/// import smail/style
 ///
 /// email.button(
-///   styles: [
-///     #("background-color", "#000"),
-///     #("color", "#fff"),
-///     #("padding", "12px 24px"),
+///   [
+///     style.background_color("#000"),
+///     style.color("#fff"),
+///     style.padding("12px 24px"),
+///     attribute.href("https://example.com"),
 ///   ],
-///   attrs: [attribute.href("https://example.com")],
-///   children: [html.text("Click me")],
+///   [html.text("Click me")],
 /// )
 /// ```
 ///
@@ -812,7 +814,7 @@ pub fn h3(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// ```gleam
 /// import smail/email
-/// import lustre/element/html
+/// import smail/element/html
 ///
 /// email.row([], [
 ///   email.column([], [html.text("Left column")]),
@@ -839,9 +841,9 @@ pub fn row(attrs: List(Attribute), children: List(Element)) -> Element {
 /// ## Example
 ///
 /// ```gleam
+/// import smail/attribute
 /// import smail/email
-/// import lustre/attribute
-/// import lustre/element/html
+/// import smail/element/html
 ///
 /// email.row([], [
 ///   email.column([attribute.width("50%")], [
@@ -862,14 +864,18 @@ pub fn column(attrs: List(Attribute), children: List(Element)) -> Element {
 /// ## Example
 ///
 /// ```gleam
+/// import smail/attribute
 /// import smail/email
-/// import lustre/attribute
-/// import lustre/element/html
+/// import smail/element/html
+/// import smail/style
 ///
 /// email.center([], [
 ///   email.button(
-///     [#("background-color", "#000"), #("padding", "12px 24px")],
-///     [attribute.href("https://example.com")],
+///     [
+///       style.background_color("#000"),
+///       style.padding("12px 24px"),
+///       attribute.href("https://example.com"),
+///     ],
 ///     [html.text("Get started")],
 ///   ),
 /// ])
