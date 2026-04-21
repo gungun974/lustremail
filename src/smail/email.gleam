@@ -21,7 +21,7 @@ import smail/style
 import smail/vdom/vattr
 import smail/vdom/vnode
 
-/// Converts an element to a string with XHTML 1.0 doctype.
+/// Converts an element to an HTML email.
 ///
 /// ## Example
 ///
@@ -34,7 +34,6 @@ import smail/vdom/vnode
 ///   email.body([], [html.text("Hello!")]),
 /// ])
 /// |> email.to_html
-/// // -> "<!DOCTYPE html PUBLIC ...><html>...</html>"
 /// ```
 ///
 pub fn to_html(el: Element) -> String {

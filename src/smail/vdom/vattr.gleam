@@ -116,7 +116,8 @@ pub fn to_string_tree(attributes: List(Attribute)) -> StringTree {
 
   case attr {
     Attribute(name: "", ..) -> html
-    Attribute(name:, value: "") -> string_tree.append(html, " " <> name)
+    Attribute(name:, value: "") ->
+      string_tree.append(html, " " <> name <> "=\"" <> name <> "\"")
     Attribute(name:, value:) ->
       string_tree.append(html, {
         " " <> name <> "=\"" <> houdini.escape(value) <> "\""

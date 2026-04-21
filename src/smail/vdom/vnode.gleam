@@ -94,7 +94,7 @@ pub fn to_string_tree(node: Element) -> StringTree {
 
       html
       |> string_tree.append_tree(attributes)
-      |> string_tree.append(">")
+      |> string_tree.append(" />")
     }
 
     Element(tag:, attributes:, children:, ..) -> {
@@ -161,7 +161,7 @@ fn do_to_snapshot_builder(
       html
       |> string_tree.prepend(spaces)
       |> string_tree.append_tree(attributes)
-      |> string_tree.append(">")
+      |> string_tree.append(" />")
     }
 
     Element(tag:, attributes:, children: [], ..) -> {
