@@ -287,13 +287,6 @@ pub fn valign(value: String) -> Attribute {
   attribute("valign", value)
 }
 
-/// Specifies a background color using an HTML attribute. Important for email
-/// clients like Outlook that may ignore CSS `background-color`.
-///
-pub fn bgcolor(value: String) -> Attribute {
-  attribute("bgcolor", value)
-}
-
 /// Specifies a background image URL using an HTML attribute. Used on tables
 /// and table cells for email clients that support it.
 ///

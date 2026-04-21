@@ -19,7 +19,31 @@ pub fn attribute(name name: String, vaue value: String) -> Attribute {
   Attribute(name:, value:)
 }
 
-//
+fn expand_style_attributes(attrs: List(Attribute)) -> List(Attribute) {
+  list.flat_map(attrs, fn(attr) {
+    case attr.name == "style" {
+      False -> [attr]
+      True -> {
+        let derived =
+          string.split(attr.value, ";")
+          |> list.filter_map(fn(style) {
+            case string.split_once(style, ":") {
+              Ok(#("color", value)) -> Ok(attribute("color", value))
+              Ok(#("text-align", value)) -> Ok(attribute("align", value))
+              Ok(#("background-color", value)) ->
+                Ok(attribute("bgcolor", value))
+              Ok(#("width", value)) -> Ok(attribute("width", value))
+              Ok(#("height", value)) -> Ok(attribute("height", value))
+              Ok(#("border", value)) -> Ok(attribute("border", value))
+              Ok(#("vertical-align", value)) -> Ok(attribute("valign", value))
+              _ -> Error(Nil)
+            }
+          })
+        [attr, ..derived]
+      }
+    }
+  })
+}
 
 pub fn prepare(attributes: List(Attribute)) -> List(Attribute) {
   case attributes {
@@ -29,6 +53,7 @@ pub fn prepare(attributes: List(Attribute)) -> List(Attribute) {
 
     _ ->
       attributes
+      |> expand_style_attributes
       // Sort in reverse because `merge` will build the list in reverse anyway.
       |> list.sort(by: fn(a, b) { compare(b, a) })
       |> merge(constants.empty_list)

@@ -294,7 +294,6 @@ fn layout(preview: Element, children: List(Element)) {
                   style.line_height("1.5rem"),
                   style.width("100%"),
                   style.background_color("#292d3e"),
-                  attribute.bgcolor("#292d3e"),
                   attribute.style(
                     "box-shadow",
                     "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
