@@ -42,7 +42,6 @@ fn convert_rem_token(token: String) -> String {
 
 // TYPOGRAPHY ------------------------------------------------------------------
 
-//TODO: Explain need to be placed on text
 pub fn color(value: String) -> Attribute {
   attribute.style("color", value)
 }

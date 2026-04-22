@@ -1,6 +1,7 @@
 // IMPORTS ---------------------------------------------------------------------
 
 import gleam/list
+import gleam/option.{type Option, None, Some}
 import gleam/string
 import gleam/string_tree.{type StringTree}
 import houdini
@@ -75,21 +76,55 @@ pub fn unsafe_inner_html(
   UnsafeInnerHtml(tag:, attributes: vattr.prepare(attributes), inner_html:)
 }
 
+type CascadingStyle {
+  CascadingStyle(color: String)
+}
+
 // STRING RENDERING ------------------------------------------------------------
 
 pub fn to_string(node: Element) -> String {
   node
-  |> to_string_tree()
+  |> to_string_tree(None)
   |> string_tree.to_string
 }
 
-pub fn to_string_tree(node: Element) -> StringTree {
+fn to_string_tree(
+  node: Element,
+  cascading_style: Option(CascadingStyle),
+) -> StringTree {
+  let cascading_style = case node {
+    Element(attributes:, ..) | UnsafeInnerHtml(attributes:, ..) -> {
+      case
+        list.find_map(attributes, fn(attribute) {
+          case attribute.name == "color" {
+            False -> Error(Nil)
+            True -> Ok(attribute.value)
+          }
+        })
+      {
+        Ok(color) -> Some(CascadingStyle(color:))
+        Error(_) -> cascading_style
+      }
+    }
+    _ -> cascading_style
+  }
+
   case node {
     Text(content: "") -> string_tree.new()
     Text(content:) -> string_tree.from_string(houdini.escape(content))
 
     Element(tag:, attributes:, void:, ..) if void -> {
       let html = string_tree.from_string("<" <> tag)
+
+      let attributes = case cascading_style {
+        Some(style) ->
+          vattr.prepare([
+            vattr.attribute("style", "color:" <> style.color <> ";"),
+            ..attributes
+          ])
+        None -> attributes
+      }
+
       let attributes = vattr.to_string_tree(attributes)
 
       html
@@ -99,17 +134,45 @@ pub fn to_string_tree(node: Element) -> StringTree {
 
     Element(tag:, attributes:, children:, ..) -> {
       let html = string_tree.from_string("<" <> tag)
+
+      let has_text_children =
+        list.any(children, fn(child) {
+          case child {
+            Text(..) -> True
+            _ -> False
+          }
+        })
+
+      let attributes = case cascading_style {
+        Some(style) if has_text_children ->
+          vattr.prepare([
+            vattr.attribute("style", "color:" <> style.color <> ";"),
+            ..attributes
+          ])
+        _ -> attributes
+      }
+
       let attributes = vattr.to_string_tree(attributes)
 
       html
       |> string_tree.append_tree(attributes)
       |> string_tree.append(">")
-      |> children_to_string_tree(children)
+      |> children_to_string_tree(cascading_style, children)
       |> string_tree.append("</" <> tag <> ">")
     }
 
     UnsafeInnerHtml(tag:, attributes:, inner_html:) -> {
       let html = string_tree.from_string("<" <> tag)
+
+      let attributes = case cascading_style {
+        Some(style) ->
+          vattr.prepare([
+            vattr.attribute("style", "color:" <> style.color <> ";"),
+            ..attributes
+          ])
+        None -> attributes
+      }
+
       let attributes = vattr.to_string_tree(attributes)
 
       html
@@ -121,7 +184,7 @@ pub fn to_string_tree(node: Element) -> StringTree {
 
     Fragment(children:) -> {
       marker_comment("smail:fragment")
-      |> children_to_string_tree(children)
+      |> children_to_string_tree(cascading_style, children)
       |> string_tree.append_tree(marker_comment("/smail:fragment"))
     }
   }
@@ -129,10 +192,11 @@ pub fn to_string_tree(node: Element) -> StringTree {
 
 fn children_to_string_tree(
   html: StringTree,
+  cascading_style: Option(CascadingStyle),
   children: List(Element),
 ) -> StringTree {
   use html, child <- list.fold(children, html)
-  string_tree.append_tree(html, to_string_tree(child))
+  string_tree.append_tree(html, to_string_tree(child, cascading_style))
 }
 
 pub fn to_snapshot(node: Element, debug: Bool) -> String {
