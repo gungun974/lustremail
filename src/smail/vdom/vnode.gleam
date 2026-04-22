@@ -206,105 +206,201 @@ fn marker_comment(label: String) {
 
 // PLAIN RENDERING ------------------------------------------------------------
 
+type CascadingTable {
+  Table
+  TableRowGroup
+  TableRow
+  TableCell
+}
+
 type CascadingDisplay {
   DisplayNone
   DisplayNewLine
   DisplayInline
-  DisplayTable
+  DisplayTable(CascadingTable)
 }
 
 fn get_element_display(node: Element) {
   case node {
     Element(tag:, attributes:, ..) -> {
       case
-        list.find_map(attributes, fn(attribute) {
-          case attribute.name == "style" {
-            False -> Error(Nil)
-            True -> {
-              string.split(attribute.value, ";")
-              |> list.find_map(fn(style) {
-                case string.split_once(style, ":") {
-                  Ok(#("display", value)) -> Ok(string.trim(value))
-                  _ -> Error(Nil)
-                }
-              })
-            }
-          }
+        list.find(attributes, fn(attribute) {
+          attribute.name == "role" && attribute.value == "presentation"
         })
       {
-        Ok("none") -> DisplayNone
-        Ok("block") -> DisplayNewLine
-        Ok("inline") -> DisplayInline
-        Ok("inline-block") -> DisplayInline
-        Ok("flex") -> DisplayNewLine
-        Ok("inline-flex") -> DisplayInline
-        Ok("grid") -> DisplayNewLine
-        Ok("inline-grid") -> DisplayInline
-        Ok("table") -> DisplayTable
-        Ok("inline-table") -> DisplayInline
-        Ok("table-row") -> DisplayInline
-        Ok("table-cell") -> DisplayInline
-        Ok("table-column") -> DisplayInline
-        Ok("table-column-group") -> DisplayInline
-        Ok("table-row-group") -> DisplayInline
-        Ok("table-header-group") -> DisplayInline
-        Ok("table-footer-group") -> DisplayInline
-        Ok("table-caption") -> DisplayInline
-        Ok("list-item") -> DisplayInline
-        Ok("contents") -> DisplayInline
-        Ok("flow-root") -> DisplayInline
-        _ ->
-          case tag {
-            "a"
-            | "abbr"
-            | "acronym"
-            | "b"
-            | "bdo"
-            | "big"
-            | "br"
-            | "button"
-            | "cite"
-            | "code"
-            | "dfn"
-            | "em"
-            | "i"
-            | "img"
-            | "input"
-            | "kbd"
-            | "label"
-            | "map"
-            | "object"
-            | "output"
-            | "q"
-            | "samp"
-            | "select"
-            | "small"
-            | "span"
-            | "strong"
-            | "sub"
-            | "sup"
-            | "textarea"
-            | "time"
-            | "tt"
-            | "var" -> DisplayInline
-            "table" -> DisplayTable
-            "tr" -> DisplayInline
-            "td" | "th" -> DisplayInline
-            "col" -> DisplayInline
-            "colgroup" -> DisplayInline
-            "tbody" -> DisplayInline
-            "thead" -> DisplayInline
-            "tfoot" -> DisplayInline
-            "caption" -> DisplayInline
-            "li" -> DisplayInline
-            "html" -> DisplayInline
-            "head" -> DisplayInline
-            "body" -> DisplayInline
-            _ -> DisplayNewLine
+        Ok(_) -> DisplayInline
+        _ -> {
+          case
+            list.find_map(attributes, fn(attribute) {
+              case attribute.name == "style" {
+                False -> Error(Nil)
+                True -> {
+                  string.split(attribute.value, ";")
+                  |> list.find_map(fn(style) {
+                    case string.split_once(style, ":") {
+                      Ok(#("display", value)) -> Ok(string.trim(value))
+                      _ -> Error(Nil)
+                    }
+                  })
+                }
+              }
+            })
+          {
+            Ok("none") -> DisplayNone
+            Ok("block") -> DisplayNewLine
+            Ok("inline") -> DisplayInline
+            Ok("inline-block") -> DisplayInline
+            Ok("flex") -> DisplayNewLine
+            Ok("inline-flex") -> DisplayInline
+            Ok("grid") -> DisplayNewLine
+            Ok("inline-grid") -> DisplayInline
+            Ok("table") -> DisplayTable(Table)
+            Ok("inline-table") -> DisplayTable(Table)
+            Ok("table-row") -> DisplayTable(TableRow)
+            Ok("table-cell") -> DisplayTable(TableCell)
+            Ok("table-column") -> DisplayTable(TableRow)
+            Ok("table-column-group") -> DisplayTable(TableCell)
+            Ok("table-row-group") -> DisplayTable(TableRowGroup)
+            Ok("table-header-group") -> DisplayTable(TableRowGroup)
+            Ok("table-footer-group") -> DisplayTable(TableRowGroup)
+            Ok("table-caption") -> DisplayInline
+            Ok("list-item") -> DisplayInline
+            Ok("contents") -> DisplayInline
+            Ok("flow-root") -> DisplayInline
+            _ ->
+              case tag {
+                "a"
+                | "abbr"
+                | "acronym"
+                | "b"
+                | "bdo"
+                | "big"
+                | "br"
+                | "button"
+                | "cite"
+                | "code"
+                | "dfn"
+                | "em"
+                | "i"
+                | "img"
+                | "input"
+                | "kbd"
+                | "label"
+                | "map"
+                | "object"
+                | "output"
+                | "q"
+                | "samp"
+                | "select"
+                | "small"
+                | "span"
+                | "strong"
+                | "sub"
+                | "sup"
+                | "textarea"
+                | "time"
+                | "tt"
+                | "var" -> DisplayInline
+                "table" -> DisplayTable(Table)
+                "tr" -> DisplayTable(TableRow)
+                "td" | "th" -> DisplayTable(TableCell)
+                "col" -> DisplayInline
+                "colgroup" -> DisplayInline
+                "tbody" -> DisplayTable(TableRowGroup)
+                "thead" -> DisplayTable(TableRowGroup)
+                "tfoot" -> DisplayTable(TableRowGroup)
+                "caption" -> DisplayInline
+                "li" -> DisplayInline
+                "html" -> DisplayInline
+                "head" -> DisplayInline
+                "body" -> DisplayInline
+                _ -> DisplayNewLine
+              }
           }
+        }
       }
     }
     _ -> DisplayInline
+  }
+}
+
+fn get_element_has_border(node: Element) -> Bool {
+  case node {
+    Element(attributes:, ..) -> {
+      let border_attr =
+        list.find_map(attributes, fn(attr) {
+          case attr.name == "border" {
+            True -> Ok(string.trim(attr.value))
+            False -> Error(Nil)
+          }
+        })
+
+      case border_attr {
+        Ok("0") -> False
+        Ok("none") -> False
+        _ -> {
+          case
+            list.find_map(attributes, fn(attribute) {
+              case attribute.name == "style" {
+                False -> Error(Nil)
+                True ->
+                  string.split(attribute.value, ";")
+                  |> list.find_map(fn(style) {
+                    case string.split_once(style, ":") {
+                      Ok(#("border", value)) -> Ok(string.trim(value))
+                      Ok(#("border-width", value)) -> Ok(string.trim(value))
+                      Ok(#("border-style", value)) -> Ok(string.trim(value))
+                      _ -> Error(Nil)
+                    }
+                  })
+              }
+            })
+          {
+            Ok("0") | Ok("none") | Ok("0px") -> False
+            _ -> True
+          }
+        }
+      }
+    }
+    _ -> True
+  }
+}
+
+fn get_element_is_full_width(node: Element) -> Bool {
+  case node {
+    Element(attributes:, ..) -> {
+      let width_attr =
+        list.find_map(attributes, fn(attr) {
+          case attr.name == "width" {
+            True -> Ok(string.trim(attr.value))
+            False -> Error(Nil)
+          }
+        })
+
+      case width_attr {
+        Ok("100%") -> True
+        _ ->
+          case
+            list.find_map(attributes, fn(attribute) {
+              case attribute.name == "style" {
+                False -> Error(Nil)
+                True ->
+                  string.split(attribute.value, ";")
+                  |> list.find_map(fn(style) {
+                    case string.split_once(style, ":") {
+                      Ok(#("width", value)) -> Ok(string.trim(value))
+                      _ -> Error(Nil)
+                    }
+                  })
+              }
+            })
+          {
+            Ok("100%") -> True
+            _ -> False
+          }
+      }
+    }
+    _ -> False
   }
 }
 
@@ -403,11 +499,10 @@ fn to_plain_string_tree(
   case node {
     Text(content: "") -> string_tree.new()
     Text(content:) -> {
-      let text = houdini.escape(content)
       case white_space {
         WhiteSpaceNowrap ->
-          string_tree.from_string(string.replace(text, " ", plain_text_nbsp))
-        _ -> string_tree.from_string(text)
+          string_tree.from_string(string.replace(content, " ", plain_text_nbsp))
+        _ -> string_tree.from_string(content)
       }
     }
     Element(tag:, void:, ..) if void -> {
@@ -441,7 +536,11 @@ fn to_plain_string_tree(
           }
           |> string_tree.append("\n\n")
         }
-        DisplayInline | DisplayTable -> {
+
+        DisplayTable(Table) ->
+          render_to_plain_string_tree(white_space, children, node)
+
+        DisplayInline | DisplayTable(_) -> {
           string_tree.new()
           |> children_to_plain_string_tree(effective_white_space, children)
         }
@@ -454,6 +553,174 @@ fn to_plain_string_tree(
       |> children_to_plain_string_tree(white_space, children)
     }
   }
+}
+
+fn table_prepare_row_and_cell(row: Element, white_space: CascadingWhiteSpace) {
+  case row, get_element_display(row) {
+    Element(children:, ..), DisplayTable(TableRow) ->
+      Ok(
+        children
+        |> list.filter_map(fn(cell) {
+          case get_element_display(cell) {
+            DisplayTable(TableCell) ->
+              Ok({
+                to_plain_string_tree(cell, white_space)
+                |> string_tree.to_string
+                |> string.trim
+                |> string.split("\n")
+                |> list.filter(fn(l) { l != "" })
+              })
+            _ -> Error(Nil)
+          }
+        }),
+      )
+    _, _ -> Error(Nil)
+  }
+}
+
+fn table_render_line(
+  row: List(List(String)),
+  col_widths: List(Int),
+  has_border: Bool,
+) -> StringTree {
+  let max_lines =
+    list.fold(row, 1, fn(acc, cell_lines) {
+      int.max(acc, list.length(cell_lines))
+    })
+
+  int.range(
+    from: 0,
+    to: max_lines,
+    with: string_tree.new(),
+    run: fn(acc, line_idx) {
+      let line =
+        list.index_map(col_widths, fn(w, i) {
+          let cell_line = case list.drop(row, i) {
+            [cell_lines, ..] ->
+              case list.drop(cell_lines, line_idx) {
+                [l, ..] -> l
+                [] -> ""
+              }
+            [] -> ""
+          }
+          " "
+          <> cell_line
+          <> string.repeat(" ", w - string.length(cell_line) + 1)
+        })
+        |> fn(cells) {
+          let cells = list.map(cells, string_tree.from_string)
+          case has_border {
+            True ->
+              string_tree.join(cells, "|")
+              |> string_tree.prepend("|")
+              |> string_tree.append("|")
+            False -> string_tree.join(cells, " ")
+          }
+        }
+      case line_idx {
+        0 -> line
+        _ -> acc |> string_tree.append("\n") |> string_tree.append_tree(line)
+      }
+    },
+  )
+}
+
+fn render_to_plain_string_tree(
+  white_space: CascadingWhiteSpace,
+  children: List(Element),
+  node: Element,
+) -> StringTree {
+  let header_rows =
+    list.flat_map(children, fn(child) {
+      case child, get_element_display(child) {
+        Element(tag: "thead", children:, ..), DisplayTable(TableRowGroup) ->
+          list.filter_map(children, table_prepare_row_and_cell(_, white_space))
+        _, _ -> []
+      }
+    })
+
+  let body_rows =
+    list.flat_map(children, fn(child) {
+      case child, get_element_display(child) {
+        Element(tag: "thead", ..), DisplayTable(TableRowGroup) -> []
+        Element(children:, ..), DisplayTable(TableRowGroup) ->
+          list.filter_map(children, table_prepare_row_and_cell(_, white_space))
+        _, _ ->
+          case table_prepare_row_and_cell(child, white_space) {
+            Ok(row) -> [row]
+            Error(_) -> []
+          }
+      }
+    })
+
+  let all_rows = list.append(header_rows, body_rows)
+
+  let num_cols =
+    list.fold(all_rows, 0, fn(acc, row) { int.max(acc, list.length(row)) })
+
+  let col_widths =
+    int.range(from: 0, to: num_cols, with: [], run: fn(acc, i) {
+      let w =
+        list.fold(all_rows, 0, fn(row_acc, row) {
+          case list.drop(row, i) {
+            [cell_lines, ..] ->
+              list.fold(cell_lines, row_acc, fn(line_acc, line) {
+                int.max(line_acc, string.length(line))
+              })
+            [] -> row_acc
+          }
+        })
+      list.append(acc, [w])
+    })
+
+  let has_border = get_element_has_border(node)
+
+  let col_widths = case get_element_is_full_width(node), num_cols > 0 {
+    True, True -> {
+      let target = case has_border {
+        True -> { plain_text_wrap_column - 1 } / num_cols - 3
+        False -> { plain_text_wrap_column + 1 } / num_cols - 3
+      }
+      list.map(col_widths, fn(w) { int.max(w, target) })
+    }
+    _, _ -> col_widths
+  }
+
+  let rendered_header =
+    list.map(header_rows, table_render_line(_, col_widths, has_border))
+  let rendered_body =
+    list.map(body_rows, table_render_line(_, col_widths, has_border))
+
+  case rendered_header, rendered_body {
+    [], [] -> string_tree.new()
+    [], _ -> string_tree.join(rendered_body, "\n")
+    _, [] -> string_tree.join(rendered_header, "\n")
+    _, _ -> {
+      let separator = case has_border {
+        True ->
+          col_widths
+          |> list.map(fn(w) {
+            string_tree.from_string(string.repeat("-", w + 2))
+          })
+          |> string_tree.join("+")
+          |> string_tree.prepend("|")
+          |> string_tree.append("|")
+        False ->
+          col_widths
+          |> list.map(fn(w) {
+            string_tree.from_string(string.repeat(" ", w + 2))
+          })
+          |> string_tree.join(" ")
+      }
+
+      string_tree.concat([
+        string_tree.join(rendered_header, "\n"),
+        separator |> string_tree.prepend("\n") |> string_tree.append("\n"),
+        string_tree.join(rendered_body, "\n"),
+      ])
+    }
+  }
+  |> string_tree.append("\n\n")
 }
 
 fn children_to_plain_string_tree(

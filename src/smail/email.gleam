@@ -975,7 +975,7 @@ pub fn h3(attrs: List(Attribute), children: List(Element)) -> Element {
 pub fn row(attrs: List(Attribute), children: List(Element)) -> Element {
   html.table(
     [
-      attribute.role("presentation"),
+      // attribute.role("presentation"),
       attribute.cellspacing(0),
       attribute.cellpadding(0),
       attribute.border(0),
