@@ -466,10 +466,10 @@ pub fn container(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// email.container([], [
 ///   email.section([], [
-///     email.text([], [html.text("First section")]),
+///     email.paragraph([], [html.text("First section")]),
 ///   ]),
 ///   email.section([], [
-///     email.text([], [html.text("Second section")]),
+///     email.paragraph([], [html.text("Second section")]),
 ///   ]),
 /// ])
 /// ```
@@ -611,12 +611,12 @@ pub fn img(attrs: List(Attribute)) {
 /// import smail/email
 /// import smail/element/html
 ///
-/// email.text([], [
+/// email.paragraph([], [
 ///   html.text("Your order has been confirmed."),
 /// ])
 /// ```
 ///
-pub fn text(attrs: List(Attribute), children: List(Element)) -> Element {
+pub fn paragraph(attrs: List(Attribute), children: List(Element)) -> Element {
   html.p(
     [
       style.font_size("14px"),
@@ -638,9 +638,9 @@ pub fn text(attrs: List(Attribute), children: List(Element)) -> Element {
 /// import smail/element/html
 ///
 /// email.section([], [
-///   email.text([], [html.text("Above the line")]),
+///   email.paragraph([], [html.text("Above the line")]),
 ///   email.hr([]),
-///   email.text([], [html.text("Below the line")]),
+///   email.paragraph([], [html.text("Below the line")]),
 /// ])
 /// ```
 ///

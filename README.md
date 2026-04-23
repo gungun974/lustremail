@@ -46,7 +46,7 @@ pub fn main() {
               style.color("#fefefc"),
             ],
             [
-              email.text(
+              email.paragraph(
                 [
                   style.margin("0"),
                   style.margin_bottom("0.5rem"),
@@ -65,7 +65,7 @@ pub fn main() {
                   html.text("."),
                 ],
               ),
-              email.text(
+              email.paragraph(
                 [
                   style.margin("0"),
                   style.margin_bottom("0.5rem"),

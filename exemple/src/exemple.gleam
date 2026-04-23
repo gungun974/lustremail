@@ -65,7 +65,7 @@ fn email(name: String) {
       "Gleam is a friendly language for building type-safe systems !",
     ),
     [
-      email.text(
+      email.paragraph(
         [
           style.margin("0"),
           style.margin_top("0.5rem"),
@@ -83,13 +83,13 @@ fn email(name: String) {
           ),
         ],
       ),
-      email.text(
+      email.paragraph(
         [style.margin("0"), style.margin_bottom("0.5rem"), ..text_base],
         [
           html.text("Have you heard about the Gleam programming language ?"),
         ],
       ),
-      email.text(
+      email.paragraph(
         [
           style.margin("0"),
           style.margin_bottom("0.5rem"),
@@ -119,7 +119,7 @@ fn email(name: String) {
       ),
       email.row([style.margin_bottom("1rem")], [
         email.column([style.padding_right("0.5rem")], [
-          email.text(
+          email.paragraph(
             [
               style.margin("0"),
               style.font_weight("600"),
@@ -128,12 +128,12 @@ fn email(name: String) {
             ],
             [html.text("Here to help")],
           ),
-          email.text([style.margin("0"), style.color("#d4d4d4"), ..text_base], [
+          email.paragraph([style.margin("0"), style.color("#d4d4d4"), ..text_base], [
             html.text("Fun and stress-free"),
           ]),
         ]),
         email.column([style.padding_left("0.5rem")], [
-          email.text(
+          email.paragraph(
             [
               style.margin("0"),
               style.font_weight("600"),
@@ -142,14 +142,14 @@ fn email(name: String) {
             ],
             [html.text("Multilingual")],
           ),
-          email.text([style.margin("0"), style.color("#d4d4d4"), ..text_base], [
+          email.paragraph([style.margin("0"), style.color("#d4d4d4"), ..text_base], [
             html.text("🩷 BEAM & JS"),
           ]),
         ]),
       ]),
       email.row([], [
         email.column([], [
-          email.text(
+          email.paragraph(
             [
               style.margin("0"),
               style.margin_bottom("1rem"),

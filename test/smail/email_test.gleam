@@ -28,20 +28,20 @@ pub fn empty_plain_email_test() {
 
 // ------------------------------
 
-fn text_email() {
-  email.text([], [
+fn paragraph_email() {
+  email.paragraph([], [
     html.text("Hoi"),
   ])
 }
 
-pub fn text_html_email_test() {
-  element.to_html(text_email())
-  |> html_snap(title: "text html email")
+pub fn paragraph_html_email_test() {
+  element.to_html(paragraph_email())
+  |> html_snap(title: "paragraph html email")
 }
 
-pub fn text_plain_email_test() {
-  element.to_plain_text(text_email())
-  |> birdie.snap(title: "text plain email")
+pub fn paragraph_plain_email_test() {
+  element.to_plain_text(paragraph_email())
+  |> birdie.snap(title: "paragraph plain email")
 }
 
 // ------------------------------
@@ -211,9 +211,9 @@ pub fn img_html_email_test() {
 fn hr_email() {
   email.html([], [
     email.body([], [
-      email.text([], [html.text("Hoi")]),
+      email.paragraph([], [html.text("Hoi")]),
       email.hr([]),
-      email.text([], [html.text("Proute")]),
+      email.paragraph([], [html.text("Proute")]),
     ]),
   ])
 }
@@ -402,7 +402,7 @@ fn center_email() {
   email.html([], [
     email.body([], [
       email.center([], [
-        email.text([], [
+        email.paragraph([], [
           html.text("center"),
         ]),
       ]),
@@ -470,7 +470,7 @@ pub fn font_with_weight_and_style_html_email_test() {
 // ------------------------------
 
 fn advanced_plain_text_email() {
-  email.text([], [
+  email.paragraph([], [
     html.text(
       "This is a long line that might need wrapping depending on the configuration used when converting to plain text.",
     ),
@@ -511,14 +511,14 @@ fn full_email() {
       email.container([], [
         email.section([style.padding("20px")], [
           email.h1([], [html.text("Order confirmed")]),
-          email.text([], [html.text("Your order has been confirmed.")]),
+          email.paragraph([], [html.text("Your order has been confirmed.")]),
           email.hr([]),
           email.row([], [
             email.column([style.width("50%")], [
-              email.text([], [html.text("Item: Widget")]),
+              email.paragraph([], [html.text("Item: Widget")]),
             ]),
             email.column([style.width("50%")], [
-              email.text([], [html.text("Price: $9.99")]),
+              email.paragraph([], [html.text("Price: $9.99")]),
             ]),
           ]),
           email.center([], [
