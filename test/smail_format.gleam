@@ -27,11 +27,9 @@ pub fn format_html(code: String) -> Result(String, Nil) {
                   #(new_lines, new_indent)
                 }
                 False -> {
-                  let line =
-                    string.repeat("  ", indent) <> "<" <> tag <> ">"
+                  let line = string.repeat("  ", indent) <> "<" <> tag <> ">"
                   let is_self_closing =
-                    string.ends_with(tag, "/")
-                    || string.starts_with(tag, "!")
+                    string.ends_with(tag, "/") || string.starts_with(tag, "!")
                   let new_indent = case is_self_closing {
                     True -> indent
                     False -> indent + 1
