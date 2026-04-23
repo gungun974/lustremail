@@ -13,9 +13,8 @@ gleam add smail@1
 import gleam/io
 import gleam/option.{Some}
 import smail/attribute
-import smail/element
-import smail/element/email
-import smail/element/html
+import smail/email
+import smail/html
 import smail/style
 
 pub fn main() {
@@ -101,11 +100,11 @@ pub fn main() {
     ])
 
   mail
-  |> element.to_html
+  |> email.to_html
   |> io.println
 
   mail
-  |> element.to_plain_text
+  |> email.to_plain_text
   |> io.println
 }
 ```

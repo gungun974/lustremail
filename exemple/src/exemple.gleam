@@ -6,9 +6,8 @@ import lumenmail/message
 import lumenmail/smtp
 import simplifile
 import smail/attribute
-import smail/element.{type Element}
-import smail/element/email
-import smail/element/html
+import smail/email
+import smail/html.{type Element}
 import smail/style
 
 pub fn main() {
@@ -16,7 +15,7 @@ pub fn main() {
 
   io.println(
     mail
-    |> element.to_plain_text(),
+    |> email.to_plain_text(),
   )
 
   let assert Ok(priv_directory) = application.priv_directory("exemple")
@@ -33,7 +32,7 @@ pub fn main() {
     |> message.from_name_email("Lucy", "lucy@example.com")
     |> message.to_email("sara@example.com")
     |> message.subject("Hey, psst!")
-    |> message.html_body(mail |> element.to_html())
+    |> message.html_body(mail |> email.to_html())
     |> message.inline_attachment(
       "lucymail.png",
       message.ApplicationOctetStream,
@@ -128,9 +127,12 @@ fn email(name: String) {
             ],
             [html.text("Here to help")],
           ),
-          email.paragraph([style.margin("0"), style.color("#d4d4d4"), ..text_base], [
-            html.text("Fun and stress-free"),
-          ]),
+          email.paragraph(
+            [style.margin("0"), style.color("#d4d4d4"), ..text_base],
+            [
+              html.text("Fun and stress-free"),
+            ],
+          ),
         ]),
         email.column([style.padding_left("0.5rem")], [
           email.paragraph(
@@ -142,9 +144,12 @@ fn email(name: String) {
             ],
             [html.text("Multilingual")],
           ),
-          email.paragraph([style.margin("0"), style.color("#d4d4d4"), ..text_base], [
-            html.text("🩷 BEAM & JS"),
-          ]),
+          email.paragraph(
+            [style.margin("0"), style.color("#d4d4d4"), ..text_base],
+            [
+              html.text("🩷 BEAM & JS"),
+            ],
+          ),
         ]),
       ]),
       email.row([], [
@@ -180,7 +185,7 @@ fn email(name: String) {
           ),
         ]),
         email.column(
-          [style.vertical_align("middle"), attribute.valign("middle")],
+          [style.vertical_align("middle"), style.vertical_align("middle")],
           [
             email.center([], [
               email.button(
@@ -291,7 +296,7 @@ fn layout(preview: Element, children: List(Element)) {
                     attribute.alt("Lucy Mail"),
                     attribute.src("cid:lucymail.png"),
                     style.height("120"),
-                    attribute.align("center"),
+                    style.text_align("center"),
                   ]),
                 ],
               ),
