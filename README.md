@@ -6,7 +6,7 @@ Write HTML compliant email with peace of mind like [Lustre](https://hex.pm/packa
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/smail/)
 
 ```sh
-gleam add smail@1
+gleam add smail@2
 ```
 
 ```gleam
