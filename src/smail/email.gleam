@@ -1,12 +1,22 @@
-//// This module provides ready-to-use, high-level components designed to make
-//// composing emails easier. Each component handles the underlying HTML table
-//// structure and cross-client quirks (Outlook MSO, Yahoo, AOL, Apple Mail,
-//// etc.) so you can focus on content rather than compatibility.
+//// Write HTML compliant emails with peace of mind, like
+//// [Lustre](https://hex.pm/packages/lustre) 😌.
+////
+//// `smail` is a library for composing HTML emails in Gleam. It handles all
+//// the quirks of email client rendering (Outlook MSO, Yahoo, AOL, Apple
+//// Mail, etc.) so you can focus on content rather than compatibility.
 ////
 //// If you need something not covered by this module — such as a plain table
 //// layout or inline `<span>` elements — the lower-level
-//// [`smail/element/html`](./html.html) module is available, though you will
+//// [`smail/html`](./html.html) module is available, though you will
 //// have to handle email client compatibility yourself.
+////
+//// Once your email is composed, use the rendering functions to produce the
+//// final output:
+////
+//// - [`to_html`](#to_html) — renders the element tree to an HTML string
+////   ready to be sent as the body of an HTML email.
+//// - [`to_plain_text`](#to_plain_text) — renders the element tree to a plain
+////   text fallback for email clients that do not support HTML.
 
 import gleam/float
 import gleam/int
@@ -15,19 +25,19 @@ import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
 import smail/attribute.{type Attribute}
-import smail/element.{type Element}
-import smail/element/html
+import smail/html.{type Element}
 import smail/internal/vattr
+import smail/internal/vnode
 import smail/style
 
 /// Render the root `<html>` element.
 ///
-/// Thin wrapper around `smail/element/html.html`.
+/// Thin wrapper around `smail/html.html`.
 ///
 /// ## Example
 ///
 /// ```gleam
-/// import smail/element/email
+/// import smail/email
 ///
 /// email.html([], [
 ///   email.head([], []),
@@ -51,7 +61,7 @@ pub fn html(attrs: List(Attribute), children: List(Element)) {
 /// ```gleam
 /// import smail/attribute
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 ///
 /// email.head([], [
 ///   html.meta([
@@ -196,7 +206,7 @@ fn font_style_to_string(style: FontStyle) -> String {
 ///
 /// ```gleam
 /// import gleam/option
-/// import smail/element/email
+/// import smail/email
 ///
 /// email.font(
 ///   family: "Josefin Sans",
@@ -301,7 +311,7 @@ fn extract_styles_loop(
 ///
 /// ```gleam
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 /// import smail/style
 ///
 /// email.body(
@@ -361,7 +371,7 @@ pub fn body(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// ```gleam
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 ///
 /// email.body([], [
 ///   email.container([], [
@@ -462,7 +472,7 @@ pub fn container(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// ```gleam
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 ///
 /// email.container([], [
 ///   email.section([], [
@@ -609,7 +619,7 @@ pub fn img(attrs: List(Attribute)) {
 ///
 /// ```gleam
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 ///
 /// email.paragraph([], [
 ///   html.text("Your order has been confirmed."),
@@ -635,7 +645,7 @@ pub fn paragraph(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// ```gleam
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 ///
 /// email.section([], [
 ///   email.paragraph([], [html.text("Above the line")]),
@@ -660,7 +670,7 @@ pub fn hr(attrs: List(Attribute)) -> Element {
 /// ```gleam
 /// import smail/attribute
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 ///
 /// email.link(
 ///   [attribute.href("https://example.com")],
@@ -811,7 +821,7 @@ fn parse_padding(styles: List(#(String, String))) -> #(Int, Int, Int, Int) {
 /// ```gleam
 /// import smail/attribute
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 /// import smail/style
 ///
 /// email.button(
@@ -870,7 +880,7 @@ pub fn button(attrs: List(Attribute), children: List(Element)) -> Element {
       // >= 500% so we need to add extra spaces accordingly.
       //
       // See https://github.com/resend/react-email/issues/1512 for why we do not use letter-spacing instead.
-      element.unsafe_raw_html("span", [], pl_mso_html),
+      html.unsafe_raw_html("span", [], pl_mso_html),
       html.span(
         [
           attribute.styles([
@@ -883,7 +893,7 @@ pub fn button(attrs: List(Attribute), children: List(Element)) -> Element {
         ],
         children,
       ),
-      element.unsafe_raw_html("span", [], pr_mso_html),
+      html.unsafe_raw_html("span", [], pr_mso_html),
     ],
   )
 }
@@ -939,7 +949,7 @@ pub fn h3(attrs: List(Attribute), children: List(Element)) -> Element {
 ///
 /// ```gleam
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 ///
 /// email.row([], [
 ///   email.column([], [html.text("Left column")]),
@@ -968,7 +978,7 @@ pub fn row(attrs: List(Attribute), children: List(Element)) -> Element {
 /// ```gleam
 /// import smail/attribute
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 ///
 /// email.row([], [
 ///   email.column([attribute.width("50%")], [
@@ -991,7 +1001,7 @@ pub fn column(attrs: List(Attribute), children: List(Element)) -> Element {
 /// ```gleam
 /// import smail/attribute
 /// import smail/email
-/// import smail/element/html
+/// import smail/html
 /// import smail/style
 ///
 /// email.center([], [
@@ -1088,4 +1098,109 @@ pub fn center(attrs: List(Attribute), children: List(Element)) -> Element {
       ]),
     ],
   )
+}
+
+/// Converts an element to an HTML email.
+///
+/// ## Example
+///
+/// ```gleam
+/// import smail/email
+/// import smail/html
+///
+/// email.html([], [
+///   email.head([], []),
+///   email.body([], [html.text("Hello!")]),
+/// ])
+/// |> email.to_html
+/// ```
+///
+pub fn to_html(el: Element) -> String {
+  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
+  <> vnode.to_html_string(wrap_document(el))
+}
+
+/// Renders an element tree to a plain text string. Lines are wrapped at
+/// 72 characters by default.
+///
+/// Use [`advanced_to_plain_text`](#advanced_to_plain_text) to customise the
+/// wrapping behaviour.
+///
+/// ## Example
+///
+/// ```gleam
+/// import smail/email
+/// import smail/html
+///
+/// email.html([], [
+///   email.head([], []),
+///   email.body([], [html.text("Hello!")]),
+/// ])
+/// |> email.to_plain_text
+/// ```
+///
+pub fn to_plain_text(el: Element) -> String {
+  vnode.to_plain_string(el, 72, True)
+}
+
+pub type PlainTextConfig {
+  PlainTextConfig(wrap_column: Int, enable_wrapping: Bool)
+}
+
+/// Like [`to_plain_text`](#to_plain_text) but accepts a `PlainTextConfig` to
+/// control the column at which lines are wrapped and whether wrapping is
+/// enabled at all.
+///
+/// ## Example
+///
+/// ```gleam
+/// import smail/email
+/// import smail/html
+///
+/// email.html([], [
+///   email.head([], []),
+///   email.body([], [html.text("Hello!")]),
+/// ])
+/// |> email.advanced_to_plain_text(email.PlainTextConfig(
+///   wrap_column: 80,
+///   enable_wrapping: True,
+/// ))
+/// ```
+///
+pub fn advanced_to_plain_text(el: Element, config: PlainTextConfig) -> String {
+  vnode.to_plain_string(el, config.wrap_column, config.enable_wrapping)
+}
+
+type DocumentType {
+  Html
+  HeadOnly
+  BodyOnly
+  HeadAndBody
+  Other
+}
+
+fn get_document_type(el: Element) -> DocumentType {
+  case el {
+    vnode.Element(tag: "html", ..) | vnode.UnsafeInnerHtml(tag: "html", ..) ->
+      Html
+    vnode.Element(tag: "head", ..) | vnode.UnsafeInnerHtml(tag: "head", ..) ->
+      HeadOnly
+    vnode.Element(tag: "body", ..) | vnode.UnsafeInnerHtml(tag: "body", ..) ->
+      BodyOnly
+    vnode.Fragment(children: [child]) -> get_document_type(child)
+    vnode.Fragment(children: [head, body]) ->
+      case get_document_type(head), get_document_type(body) {
+        HeadOnly, BodyOnly -> HeadAndBody
+        _, _ -> Other
+      }
+    _ -> Other
+  }
+}
+
+fn wrap_document(el: Element) -> Element {
+  case get_document_type(el) {
+    Html -> el
+    HeadOnly | BodyOnly | HeadAndBody -> html.element("html", [], [el])
+    Other -> html.element("html", [], [html.element("body", [], [el])])
+  }
 }

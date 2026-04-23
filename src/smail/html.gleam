@@ -1,27 +1,92 @@
 //// This module exposes low-level HTML elements that can be used directly when
 //// needed. Because HTML in emails is old and full of
 //// client-specific quirks, it is strongly recommended to use the
-//// [`smail/element/email`](./email.html) module instead, which handles all
+//// [`smail/email`](./email.html) module instead, which handles all
 //// compatibility concerns for you.
 ////
 //// That said, this module is useful when you need something not covered by
-//// `smail/element/email` — for example, building a plain table layout or
+//// `smail/email` — for example, building a plain table layout or
 //// using a `<span>` for inline styling.
 
-// IMPORTS ---------------------------------------------------------------------
-
 import smail/attribute.{type Attribute}
-import smail/element.{type Element, element}
+import smail/internal/vnode
+
+pub type Element =
+  vnode.Element
+
+// CONSTRUCTORS ----------------------------------------------------------------
+
+/// Creates an HTML element with the given tag name, attributes, and children.
+/// Void elements (such as `<img>` or `<br>`) are detected automatically and
+/// rendered without a closing tag.
+///
+pub fn element(
+  tag: String,
+  attributes: List(Attribute),
+  children: List(Element),
+) -> Element {
+  vnode.element(
+    tag: tag,
+    attributes:,
+    children: children,
+    void: vnode.is_void_html_element(tag),
+  )
+}
+
+/// Like [`element`](#element) but lets you explicitly control whether the
+/// element is void. Use this when you need a custom tag that should be
+/// rendered without a closing tag.
+///
+pub fn advanced(
+  tag: String,
+  attributes: List(Attribute),
+  children: List(Element),
+  void: Bool,
+) -> Element {
+  vnode.element(tag:, attributes:, children:, void:)
+}
+
+/// Creates a text node. HTML special characters in `content` are escaped
+/// automatically.
+///
+pub fn text(content: String) -> Element {
+  vnode.text(content:)
+}
+
+/// Creates an empty element that renders nothing. Useful for conditionally
+/// including or omitting content without changing the structure of the tree.
+///
+pub fn none() -> Element {
+  vnode.text(content: "")
+}
+
+/// Groups multiple elements together without introducing a wrapping tag in
+/// the rendered output.
+///
+pub fn fragment(children: List(Element)) -> Element {
+  vnode.fragment(children:)
+}
+
+/// Creates an element whose inner content is set directly from a raw HTML
+/// string without any escaping. The provided HTML is injected as-is into
+/// the output.
+///
+/// > **Warning**: never pass untrusted user input to this function as it will
+/// > be rendered verbatim, which may introduce XSS vulnerabilities.
+///
+pub fn unsafe_raw_html(
+  tag: String,
+  attributes: List(Attribute),
+  inner_html: String,
+) -> Element {
+  vnode.unsafe_inner_html(tag:, attributes:, inner_html:)
+}
 
 // HTML ELEMENTS: MAIN ROOT ----------------------------------------------------
 
 ///
 pub fn html(attrs: List(Attribute), children: List(Element)) -> Element {
   element("html", attrs, children)
-}
-
-pub fn text(content: String) -> Element {
-  element.text(content)
 }
 
 // HTML ELEMENTS: DOCUMENT METADATA --------------------------------------------
@@ -48,7 +113,7 @@ pub fn meta(attrs: List(Attribute)) -> Element {
 
 ///
 pub fn style(attrs: List(Attribute), css: String) -> Element {
-  element.unsafe_raw_html("style", attrs, css)
+  unsafe_raw_html("style", attrs, css)
 }
 
 ///
@@ -336,62 +401,62 @@ pub fn map(attrs: List(Attribute), children: List(Element)) -> Element {
 
 ///
 pub fn del(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("del", attrs, children)
+  element("del", attrs, children)
 }
 
 ///
 pub fn ins(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("ins", attrs, children)
+  element("ins", attrs, children)
 }
 
 // HTML ELEMENTS: TABLE CONTENT ------------------------------------------------
 
 ///
 pub fn caption(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("caption", attrs, children)
+  element("caption", attrs, children)
 }
 
 ///
 pub fn col(attrs: List(Attribute)) -> Element {
-  element.element("col", attrs, [])
+  element("col", attrs, [])
 }
 
 ///
 pub fn colgroup(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("colgroup", attrs, children)
+  element("colgroup", attrs, children)
 }
 
 ///
 pub fn table(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("table", attrs, children)
+  element("table", attrs, children)
 }
 
 ///
 pub fn tbody(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("tbody", attrs, children)
+  element("tbody", attrs, children)
 }
 
 ///
 pub fn td(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("td", attrs, children)
+  element("td", attrs, children)
 }
 
 ///
 pub fn tfoot(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("tfoot", attrs, children)
+  element("tfoot", attrs, children)
 }
 
 ///
 pub fn th(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("th", attrs, children)
+  element("th", attrs, children)
 }
 
 ///
 pub fn thead(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("thead", attrs, children)
+  element("thead", attrs, children)
 }
 
 ///
 pub fn tr(attrs: List(Attribute), children: List(Element)) -> Element {
-  element.element("tr", attrs, children)
+  element("tr", attrs, children)
 }
