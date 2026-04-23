@@ -5,6 +5,11 @@ description = "Write HTML compliant email with peace of mind like Lustre 😌"
 licences = ["Apache-2.0"]
 repository = { type = "github", user = "gungun974", repo = "smail" }
 
+links = [
+  { title = "Example", href = "https://github.com/gungun974/smail/blob/main/exemple/src/exemple.gleam" },
+]
+
+
 [dependencies]
 gleam_stdlib = ">= 0.44.0 and < 2.0.0"
 houdini = ">= 1.2.1 and < 2.0.0"
